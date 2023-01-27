@@ -3,6 +3,7 @@ import { prisma } from '@/config';
 import { Response } from 'express';
 import { requestError } from '@/errors';
 import httpStatus from 'http-status';
+import { TicketStatus } from '@prisma/client';
 
 export async function getTickets(req: AuthenticatedRequest, res: Response): Promise<Response> {
   try {
@@ -56,7 +57,7 @@ export async function createTicket(req: AuthenticatedRequest, res: Response): Pr
             userId,
           },
         },
-        status: 'RESERVED',
+        status: TicketStatus.RESERVED,
       },
       include: {
           TicketType: true,
