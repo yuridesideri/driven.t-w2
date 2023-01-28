@@ -52,6 +52,8 @@ export function createPaymentAndPayTicketRepo(ticketId: number, cardData: { issu
                     ]
                 }
             },
-
+            select: {
+                Payment: true
+            }
         })
 }

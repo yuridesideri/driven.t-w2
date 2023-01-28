@@ -3,7 +3,7 @@ import { createPaymentAndPayTicketRepo, userIdFromEnrollmentRepo, getPaymentsRep
 import { parseCreditCardLastDigits } from "@/utils/creditCard-utils";
 
 export async function getPaymentsSvc(userId: number, ticketId: number){
-    await validateUserTicketExistanceAndOwnershipSvc(userId, Number(ticketId));
+    await validateUserTicketExistanceAndOwnershipSvc(userId, ticketId);
     const payment = await getPaymentsRepo(ticketId);
     return payment;
 }
@@ -16,8 +16,8 @@ export async function postPaymentsSvc(userId:number, ticketId: number, cardData:
         lastDigits: parseCreditCardLastDigits(cardData.number),
         ticketPrice: ticketPrice
     }
-    const payment = await createPaymentAndPayTicketRepo(ticketId, cardDataForRepo)
-    return payment;
+    const {Payment} = await createPaymentAndPayTicketRepo(ticketId, cardDataForRepo)
+    return Payment[0];
 }
 
 

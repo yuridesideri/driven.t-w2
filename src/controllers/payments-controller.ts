@@ -29,7 +29,7 @@ export async function createPayment(req: AuthenticatedRequest, res: Response): P
     try {
         const { ticketId, cardData } = req.body;
         const { userId } = req;
-        const payment = postPaymentsSvc(userId, ticketId, cardData);
+        const payment = await postPaymentsSvc(userId, ticketId, cardData);
         res.status(200).send(payment);
     }catch (err){
         console.error(err)
