@@ -10,27 +10,27 @@ export function getEnrollmentThatHasTicketRepo(userId: number) {
   });
 }
 
-export function getTicketTypesRepo(){
-    return prisma.ticketType.findMany();
+export function getTicketTypesRepo() {
+  return prisma.ticketType.findMany();
 }
 
-export function createTicketRepo(userId: number, ticketTypeId: number){
-    return prisma.ticket.create({
-        data: {
-          TicketType: {
-            connect: {
-              id: ticketTypeId,
-            },
-          },
-          Enrollment: {
-            connect: {
-              userId,
-            },
-          },
-          status: TicketStatus.RESERVED,
+export function createTicketRepo(userId: number, ticketTypeId: number) {
+  return prisma.ticket.create({
+    data: {
+      TicketType: {
+        connect: {
+          id: ticketTypeId,
         },
-        include: {
-            TicketType: true,
-          },
-      });
+      },
+      Enrollment: {
+        connect: {
+          userId,
+        },
+      },
+      status: TicketStatus.RESERVED,
+    },
+    include: {
+      TicketType: true,
+    },
+  });
 }
