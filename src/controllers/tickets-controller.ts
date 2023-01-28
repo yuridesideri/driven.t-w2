@@ -30,7 +30,7 @@ export async function getTickets(req: AuthenticatedRequest, res: Response): Prom
 export async function getTicketTypes(req: AuthenticatedRequest, res: Response): Promise<Response> {
   try {
     const ticketTypes = await prisma.ticketType.findMany();
-    if (!ticketTypes) throw requestError(404, 'No ticket types found');
+    if (ticketTypes.length === 0) throw requestError(404, 'No ticket types found');
 
     res.status(200).send(ticketTypes);
   } catch (err) {

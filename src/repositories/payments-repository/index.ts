@@ -1,36 +1,57 @@
-import { prisma } from "@/config";
-import { requestError } from "@/errors";
+import { prisma } from '@/config';
+import { requestError } from '@/errors';
+import { TicketStatus } from '@prisma/client';
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-export async function validateUserTicketExistanceAndOwnership(userId: number, ticketId: number){
-    const { userIdFromTicket } = await validateUserTicketExistance(ticketId);
-    if (userId !== userIdFromTicket) throw requestError(401, "Unauthorized");
+export function getPaymentsRepo(ticketId: number) {
+  return prisma.payment.findFirst({
+    where: {
+      ticketId: Number(ticketId),
+    },
+  });
 }
 
-async function validateUserTicketExistance(ticketId: number): Promise<{userIdFromTicket: number}>{
-    const enrollmentFromUserId = await prisma.ticket.findUnique({
-        where: { id: Number(ticketId) },
+export function userIdFromEnrollmentRepo(ticketId: number) {
+  return prisma.ticket.findUnique({
+    where: { id: Number(ticketId) },
+    select: {
+      Enrollment: {
         select: {
-            Enrollment:{
-                select:{
-                    userId: true
-                }
-            }
+          userId: true,
         },
-        rejectOnNotFound: () => requestError(404, "Ticket not found")
-    });
-    const userIdFromTicket = enrollmentFromUserId.Enrollment.userId;
-    return { userIdFromTicket };
+      },
+    },
+    rejectOnNotFound: () => requestError(404, 'Ticket not found'),
+  });
+}
+
+
+export function getTicketPriceRepo(ticketId: number) {
+  return prisma.ticket.findFirst({
+    where: { id:ticketId },
+    select: {
+      TicketType: {
+        select: { price: true },
+      },
+    },
+  });
+}
+
+
+export function createPaymentAndPayTicketRepo(ticketId: number, cardData: { issuer: string; lastDigits: string; ticketPrice: number}) {
+  return prisma.ticket.update({
+            where: {id: ticketId},
+            data: {
+                status: TicketStatus.PAID,
+                Payment: {
+                    create:[
+                        {
+                            cardIssuer: cardData.issuer,
+                            cardLastDigits: cardData.lastDigits,
+                            value: cardData.ticketPrice                
+                        }
+                    ]
+                }
+            },
+
+        })
 }
